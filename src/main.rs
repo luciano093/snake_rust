@@ -48,8 +48,22 @@ fn main() {
     let mut snake = Snake::new(grid.clone());
     let mut apple = Apple::new(grid.clone());
 
+    // renders for first time to avoid white screen
+    grid.as_ref().borrow().iter().enumerate().for_each(|(row, arr)| {
+        arr.iter().enumerate().for_each(|(col, &coord)| {
+            if coord == 1 {
+                let rect = Rect::new(col as i32 * cell_width as i32, row as i32 * cell_height as i32, cell_width, cell_height);
+                canvas.copy(&texture, None, rect).unwrap();
+            }
+            else if coord == 2 {
+                let rect = Rect::new(col as i32 * cell_width as i32, row as i32 * cell_height as i32, cell_width, cell_height);
+                canvas.copy(&apple_texture, None, rect).unwrap();
+            }
+        });
+    });
+
     let mut delay = 0;
-    let mut max_delay = 420;
+    let mut max_delay = 560;
 
     let mut event_pump = sdl_context.event_pump().unwrap();
     loop {   
@@ -60,8 +74,14 @@ fn main() {
             Some(Keycode::Right) if snake.direction != Direction::Left => snake.direction = Direction::Right,
             Some(Keycode::Up) if snake.direction != Direction::Down => snake.direction = Direction::Up,
             Some(Keycode::Down) if snake.direction != Direction::Up => snake.direction = Direction::Down,
-            Some(Keycode::Plus) | Some(Keycode::Equals) if max_delay > 0 => max_delay -= 20,
-            Some(Keycode::Minus) => max_delay += 20,
+            Some(Keycode::Plus) | Some(Keycode::Equals) if max_delay > 0 => {
+                max_delay += 20;
+                println!("delay: {}", max_delay);
+            }
+            Some(Keycode::Minus) => {
+                max_delay -= 20;
+                println!("delay: {}", max_delay);
+            }
             _ => (),
         };
 
