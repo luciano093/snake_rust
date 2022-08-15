@@ -34,7 +34,7 @@ pub fn create_texture(texture_creator: &TextureCreator<WindowContext>, size: u32
     let mut data = vec![0; size as usize * size as usize * 3];
 
     let mut state = 0i8;
-    data.iter_mut().enumerate().for_each(|(i, num)| {
+    data.iter_mut().for_each(|num| {
        if state == 0 {
         *num = color.b;
        }
@@ -57,7 +57,7 @@ pub fn create_texture(texture_creator: &TextureCreator<WindowContext>, size: u32
     Texture::from_surface(&surface, texture_creator).unwrap()
 }
 
-pub fn get_grid_sizes(grid: &[[u8; GRID_COLS]; GRID_ROWS]) -> (u32, u32) {
+pub fn get_grid_size(grid: &[[u8; GRID_COLS]; GRID_ROWS]) -> (u32, u32) {
     let cell_width = WIDTH / grid.len() as u32;
     let cell_height = HEIGHT / grid[0].len() as u32;
 

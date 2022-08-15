@@ -13,7 +13,7 @@ use snake_2::{WIDTH, HEIGHT};
 
 use snake_2::init_window;
 use snake_2::create_texture;
-use snake_2::get_grid_sizes;
+use snake_2::get_grid_size;
 
 use snake_2::snake::{Snake, Direction};
 
@@ -32,12 +32,13 @@ fn handle_events(event_pump: &mut EventPump) -> Option<Keycode> {
 fn main() {
     let (mut canvas, sdl_context) = init_window("Snake", WIDTH, HEIGHT);
     canvas.set_draw_color(Color::WHITE);
+    canvas.clear();
 
     let grid = [[0u8; GRID_COLS]; GRID_ROWS];
 
     assert!(WIDTH % grid.len() as u32 == 0 && HEIGHT % grid[0].len() as u32 == 0);
 
-    let (cell_width, cell_height) = get_grid_sizes(&grid);
+    let (cell_width, cell_height) = get_grid_size(&grid);
 
     let texture_creator = canvas.texture_creator();
     let texture = create_texture(&texture_creator, cell_width, Color::RGB(0, 255, 0));
@@ -51,8 +52,7 @@ fn main() {
     let mut max_delay = 420;
 
     let mut event_pump = sdl_context.event_pump().unwrap();
-    loop {
-        canvas.clear();
+    loop {   
         delay += 1;
 
         match handle_events(&mut event_pump) {
@@ -65,20 +65,8 @@ fn main() {
             _ => (),
         };
 
-        grid.as_ref().borrow().iter().enumerate().for_each(|(row, arr)| {
-            arr.iter().enumerate().for_each(|(col, &coord)| {
-                if coord == 1 {
-                    let rect = Rect::new(col as i32 * cell_width as i32, row as i32 * cell_height as i32, cell_width, cell_height);
-                    canvas.copy(&texture, None, rect).unwrap();
-                }
-                else if coord == 2 {
-                    let rect = Rect::new(col as i32 * cell_width as i32, row as i32 * cell_height as i32, cell_width, cell_height);
-                    canvas.copy(&apple_texture, None, rect).unwrap();
-                }
-            });
-        });
-
         if delay > max_delay {
+            canvas.clear();
             delay = 0;
 
             snake.r#move();
@@ -92,6 +80,19 @@ fn main() {
                 snake.grow();
                 apple.rand_pos();
             }
+
+            grid.as_ref().borrow().iter().enumerate().for_each(|(row, arr)| {
+                arr.iter().enumerate().for_each(|(col, &coord)| {
+                    if coord == 1 {
+                        let rect = Rect::new(col as i32 * cell_width as i32, row as i32 * cell_height as i32, cell_width, cell_height);
+                        canvas.copy(&texture, None, rect).unwrap();
+                    }
+                    else if coord == 2 {
+                        let rect = Rect::new(col as i32 * cell_width as i32, row as i32 * cell_height as i32, cell_width, cell_height);
+                        canvas.copy(&apple_texture, None, rect).unwrap();
+                    }
+                });
+            });
         }
 
         canvas.present();
