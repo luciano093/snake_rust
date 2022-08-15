@@ -1,7 +1,7 @@
 use std::mem::size_of;
 
 use sdl2::Sdl;
-use sdl2::pixels::PixelFormatEnum;
+use sdl2::pixels::{PixelFormatEnum, Color};
 use sdl2::render::{Canvas, TextureCreator, Texture};
 use sdl2::surface::Surface;
 use sdl2::video::{Window, WindowContext};
@@ -30,13 +30,26 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (Canvas<Window>, Sdl
     (canvas, sdl_context)
 }
 
-pub fn create_texture(texture_creator: &TextureCreator<WindowContext>, size: u32, color: u8, dividend: usize) -> Texture {
+pub fn create_texture(texture_creator: &TextureCreator<WindowContext>, size: u32, color: Color) -> Texture {
     let mut data = vec![0; size as usize * size as usize * 3];
 
+    let mut state = 0i8;
     data.iter_mut().enumerate().for_each(|(i, num)| {
-        if i % dividend == 0 {
-            *num = color;
-        }
+       if state == 0 {
+        *num = color.b;
+       }
+       else if state == 1 {
+        *num = color.g;
+       }
+       else if state == 2 {
+        *num = color.r;
+       }
+       else if state == 3 {
+        *num = color.a;
+        state = -1;
+       }
+
+       state += 1;
     });
 
     let surface = Surface::from_data(&mut data, size, size, size * size_of::<u8>() as u32, PixelFormatEnum::RGB888).unwrap();

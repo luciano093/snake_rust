@@ -40,8 +40,8 @@ fn main() {
     let (cell_width, cell_height) = get_grid_sizes(&grid);
 
     let texture_creator = canvas.texture_creator();
-    let texture = create_texture(&texture_creator, cell_width, 255, 9);
-    let apple_texture = create_texture(&texture_creator, cell_height, 255, 2);
+    let texture = create_texture(&texture_creator, cell_width, Color::RGB(0, 255, 0));
+    let apple_texture = create_texture(&texture_creator, cell_height, Color::RGB(255, 0, 0));
 
     let grid = Rc::new(RefCell::new(grid));
     let mut snake = Snake::new(grid.clone());
