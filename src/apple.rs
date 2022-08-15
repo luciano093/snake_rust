@@ -18,11 +18,18 @@ pub struct Apple {
 
 impl Apple {
     pub fn new(grid: Rc<RefCell<[[u8; GRID_COLS]; GRID_ROWS]>>) -> Self {
-        let range: ThreadRng = rand::thread_rng();
+        let mut range: ThreadRng = rand::thread_rng();
         let rand_row: Uniform<i32> = Uniform::from(0..GRID_ROWS as i32);
         let rand_col: Uniform<i32> = Uniform::from(0..GRID_COLS as i32);
 
-        let position = Position { x: GRID_COLS as i32 / 2, y: GRID_ROWS as i32 / 2 };
+        // allows apple's first position to be random
+        let (mut x, mut y) = (rand_col.sample(&mut range), rand_row.sample(&mut range));
+
+        while grid.borrow()[y as usize][x as usize] != 0 {
+            (x, y) = (rand_col.sample(&mut range), rand_row.sample(&mut range));
+        }
+
+        let position = Position { x, y };
 
         grid.as_ref().borrow_mut()[position.y as usize][position.x as usize] = 2;
 
